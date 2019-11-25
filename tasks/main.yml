@@ -1,0 +1,61 @@
+---
+# tasks file for esolitos.docker_syncthing
+  -
+    name: syncthing - user
+    user:
+      name: "{{ syncthing_username }}"
+      group: "{{ syncthing_group }}"
+      shell: /bin/false
+    register: syncthing_user
+  -
+    name: syncthing - data dir fact
+    set_fact:
+      syncthing_host_dir: "{{ syncthing_user.home }}/{{ syncthing_data_dirname }}"
+  -
+    name: syncthing - pull image
+    docker_image:
+      source: pull
+      name: syncthing/syncthing
+  -
+    name: syncthing - run container
+    docker_container:
+      name: syncthing_main
+      image: syncthing/syncthing
+      state: started
+      restart_policy: "unless-stopped"
+      env:
+        PUID: "{{ syncthing_user.uid }}"
+        PGID: "{{ syncthing_user.group }}"
+      ports:
+        - "127.0.0.1:8384:8384"
+        - "22000:22000"
+      volumes:
+        - "{{ syncthing_host_dir }}:/var/syncthing:cached"
+      healthcheck:
+        interval: 60s
+        start_period: 60s
+        timeout: 10s
+        test: ["CMD-SHELL", "nc -z localhost 8384 || exit 1"]
+      comparisons:
+        '*': strict
+        image: ignore
+  -
+    name: syncthing - firewall WebGUI
+    iptables:
+      chain: INPUT
+      source: "{{ item }}"
+      protocol: tcp
+      destination_port: "8384"
+      comment: syncthing WebGUI
+      jump: ACCEPT
+    when: syncthing_firewall | boolean
+    with_items: "{{ syncthing_firewall_gui_whitelist_ip }}"
+  -
+    name: syncthing - firewall
+    iptables:
+      chain: INPUT
+      protocol: tcp
+      destination_port: "22000"
+      comment: syncthing
+      jump: ACCEPT
+    when: syncthing_firewall | boolean

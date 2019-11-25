@@ -1,0 +1,22 @@
+galaxy_info:
+  author: Esolitos
+  description: "Runs Syncthing app via docker"
+  license: MIT
+
+  min_ansible_version: 2.9
+  # min_ansible_container_version:
+  platforms:
+    - name: Debian
+      versions:
+        - jessie
+        - stretch
+        - buster
+
+  galaxy_tags:
+    - syncthing
+    - docker
+    - containers
+    - server
+    - iptables
+
+dependencies: []

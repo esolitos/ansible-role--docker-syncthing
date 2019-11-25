@@ -1,0 +1,8 @@
+---
+# defaults file for esolitos.docker_syncthing
+syncthing_username: syncthing
+syncthing_group: nogroup
+syncthing_data_dirname: data
+
+syncthing_firewall: yes
+syncthing_firewall_gui_whitelist_ip: []
