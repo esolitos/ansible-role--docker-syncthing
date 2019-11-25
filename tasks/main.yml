@@ -48,7 +48,7 @@
       destination_port: "8384"
       comment: syncthing WebGUI
       jump: ACCEPT
-    when: syncthing_firewall | boolean
+    when: syncthing_firewall | bool
     with_items: "{{ syncthing_firewall_gui_whitelist_ip }}"
   -
     name: syncthing - firewall
@@ -58,4 +58,4 @@
       destination_port: "22000"
       comment: syncthing
       jump: ACCEPT
-    when: syncthing_firewall | boolean
+    when: syncthing_firewall | bool
